@@ -6,7 +6,7 @@
 //    {
 //        public static void Initialize(CarContext context)
 //        {
-//            // check cusotmers
+//            // check customers
 //            if (context.Customers.Any())
 //            {
 //                return;
@@ -60,7 +60,7 @@
 //            new Customer {FirstName="Ricardo", LastName="April", Age=23, Address = new Address() {Street = "graven"}, Created = DateTime.Now.AddDays(-4),},
 //            new Customer {FirstName="Carl", LastName="June", Age=24, Address = new Address() {Street = "bingo"}, Created = DateTime.Now.AddDays(-17),},
 //            new Customer {FirstName="Carsten", LastName="July", Age=23, Address = new Address() {Street = "bango"}, Created = DateTime.Now.AddDays(-7),},
-//           };
+//            };
 
 //            context.Customers.AddRange(customers);
 //            context.SaveChanges();
@@ -76,7 +76,7 @@
 
 //            context.SalesPeople.AddRange(salesPeople);
 //            context.SaveChanges();
-            
+
 //            var carPurchases = new CarPurchase[]
 //            {
 //                new CarPurchase{CarId = 1, CustomerId = 3, SalesPersonId = 1},

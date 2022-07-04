@@ -43,6 +43,19 @@ namespace CarStuff.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Extras",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Extras", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SalesPeople",
                 columns: table => new
                 {
@@ -80,22 +93,27 @@ namespace CarStuff.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Extras",
+                name: "CarExtraItem",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<int>(type: "int", nullable: false),
-                    CarId = table.Column<int>(type: "int", nullable: true)
+                    CarsId = table.Column<int>(type: "int", nullable: false),
+                    ExtrasId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Extras", x => x.Id);
+                    table.PrimaryKey("PK_CarExtraItem", x => new { x.CarsId, x.ExtrasId });
                     table.ForeignKey(
-                        name: "FK_Extras_Cars_CarId",
-                        column: x => x.CarId,
+                        name: "FK_CarExtraItem_Cars_CarsId",
+                        column: x => x.CarsId,
                         principalTable: "Cars",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CarExtraItem_Extras_ExtrasId",
+                        column: x => x.ExtrasId,
+                        principalTable: "Extras",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -134,6 +152,11 @@ namespace CarStuff.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_CarExtraItem_ExtrasId",
+                table: "CarExtraItem",
+                column: "ExtrasId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CarPurchases_CarId",
                 table: "CarPurchases",
                 column: "CarId");
@@ -152,15 +175,13 @@ namespace CarStuff.Migrations
                 name: "IX_Customers_AddressId",
                 table: "Customers",
                 column: "AddressId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Extras_CarId",
-                table: "Extras",
-                column: "CarId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "CarExtraItem");
+
             migrationBuilder.DropTable(
                 name: "CarPurchases");
 
@@ -168,13 +189,13 @@ namespace CarStuff.Migrations
                 name: "Extras");
 
             migrationBuilder.DropTable(
+                name: "Cars");
+
+            migrationBuilder.DropTable(
                 name: "Customers");
 
             migrationBuilder.DropTable(
                 name: "SalesPeople");
-
-            migrationBuilder.DropTable(
-                name: "Cars");
 
             migrationBuilder.DropTable(
                 name: "Addresses");

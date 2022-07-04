@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarStuff.Migrations
 {
     [DbContext(typeof(CarContext))]
-    [Migration("20220704173056_InitialCreate")]
+    [Migration("20220704174457_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,21 @@ namespace CarStuff.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("CarExtraItem", b =>
+                {
+                    b.Property<int>("CarsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExtrasId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CarsId", "ExtrasId");
+
+                    b.HasIndex("ExtrasId");
+
+                    b.ToTable("CarExtraItem");
+                });
 
             modelBuilder.Entity("CarStuff.Models.Address", b =>
                 {
@@ -156,15 +171,10 @@ namespace CarStuff.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("CarId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Name")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CarId");
 
                     b.ToTable("Extras");
                 });
@@ -189,6 +199,21 @@ namespace CarStuff.Migrations
                     b.ToTable("SalesPeople");
                 });
 
+            modelBuilder.Entity("CarExtraItem", b =>
+                {
+                    b.HasOne("CarStuff.Models.Car", null)
+                        .WithMany()
+                        .HasForeignKey("CarsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CarStuff.Models.ExtraItem", null)
+                        .WithMany()
+                        .HasForeignKey("ExtrasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CarStuff.Models.CarPurchase", b =>
                 {
                     b.HasOne("CarStuff.Models.Car", "Car")
@@ -198,7 +223,7 @@ namespace CarStuff.Migrations
                         .IsRequired();
 
                     b.HasOne("CarStuff.Models.Customer", "Customer")
-                        .WithMany()
+                        .WithMany("CarPurchases")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -227,16 +252,9 @@ namespace CarStuff.Migrations
                     b.Navigation("Address");
                 });
 
-            modelBuilder.Entity("CarStuff.Models.ExtraItem", b =>
+            modelBuilder.Entity("CarStuff.Models.Customer", b =>
                 {
-                    b.HasOne("CarStuff.Models.Car", null)
-                        .WithMany("Extras")
-                        .HasForeignKey("CarId");
-                });
-
-            modelBuilder.Entity("CarStuff.Models.Car", b =>
-                {
-                    b.Navigation("Extras");
+                    b.Navigation("CarPurchases");
                 });
 #pragma warning restore 612, 618
         }

@@ -22,6 +22,21 @@ namespace CarStuff.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("CarExtraItem", b =>
+                {
+                    b.Property<int>("CarsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExtrasId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CarsId", "ExtrasId");
+
+                    b.HasIndex("ExtrasId");
+
+                    b.ToTable("CarExtraItem");
+                });
+
             modelBuilder.Entity("CarStuff.Models.Address", b =>
                 {
                     b.Property<int>("Id")
@@ -154,15 +169,10 @@ namespace CarStuff.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("CarId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Name")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CarId");
 
                     b.ToTable("Extras");
                 });
@@ -185,6 +195,21 @@ namespace CarStuff.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SalesPeople");
+                });
+
+            modelBuilder.Entity("CarExtraItem", b =>
+                {
+                    b.HasOne("CarStuff.Models.Car", null)
+                        .WithMany()
+                        .HasForeignKey("CarsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CarStuff.Models.ExtraItem", null)
+                        .WithMany()
+                        .HasForeignKey("ExtrasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CarStuff.Models.CarPurchase", b =>
@@ -223,18 +248,6 @@ namespace CarStuff.Migrations
                         .IsRequired();
 
                     b.Navigation("Address");
-                });
-
-            modelBuilder.Entity("CarStuff.Models.ExtraItem", b =>
-                {
-                    b.HasOne("CarStuff.Models.Car", null)
-                        .WithMany("Extras")
-                        .HasForeignKey("CarId");
-                });
-
-            modelBuilder.Entity("CarStuff.Models.Car", b =>
-                {
-                    b.Navigation("Extras");
                 });
 
             modelBuilder.Entity("CarStuff.Models.Customer", b =>
