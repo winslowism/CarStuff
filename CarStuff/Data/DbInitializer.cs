@@ -1,98 +1,164 @@
-﻿//using CarStuff.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using CarStuff.Extensions;
+using CarStuff.Models;
+using Microsoft.EntityFrameworkCore;
 
-//namespace CarStuff.Data
-//{
-//    public static class DbInitializer
-//    {
-//        public static void Initialize(CarContext context)
-//        {
-//            // check customers
-//            if (context.Customers.Any())
-//            {
-//                return;
-//            }
+namespace CarStuff.Data
+{
+    public class DbInitializer
+    {
+        private CarContext Ctx { get; }
 
+        public DbInitializer(CarContext ctx)
+        {
+            this.Ctx = ctx;
+        }
 
-//            //var Name = new ExtraItem[]
-//            //{
-//            //    new ExtraItem() {Name = Extra.Awesome},
-//            //    new ExtraItem() {Name = Extra.Slow},
-//            //    new ExtraItem() {Name = Extra.Loud},
-//            //    new ExtraItem() {Name = Extra.ReallyFast},
-//            //    new ExtraItem() {Name = Extra.Fast},
-//            //};
+        public List<ExtraItem> GetRandomExtras()
+        {
+            var rnd = new Random();
+            var extras = Ctx.Extras
+                .ToList()
+                .OrderBy(x => rnd.Next())
+                .Take(rnd.Next(Ctx.Extras.Count()))
+                .ToList();
+            return extras;
+        }
 
-//            //context.ExtraItems.AddRange(extra);
-//            //context.SaveChanges();
+        public Model RandomModel() => new Random().NextEnum<Model>();
+        public Make RandomMake() => new Random().NextEnum<Make>();
+        public Color RandomColor() => new Random().NextEnum<Color>();
+        public int RandomPrice() => new Random().Next(1000, 40000);
 
+        public void Initialize()
+        {
+            // check customers
+            if (Ctx.Customers.Any())
+            {
+                return;
+            }
 
-//            var cars = new Car[]
-//{
-//            new Car(){Color = Color.Black, Extras = new List<ExtraItem>() { new(){Name = Extra.Awesome}}, Make = Make.Ford, Model = Model.Five, RecommendedPrice = 12},
-//            new Car(){Color = Color.Blue, Extras = new List<ExtraItem>() { new(){Name = Extra.Awesome}, new(){Name = Extra.Fast}}, Make = Make.Ford, Model = Model.Four, RecommendedPrice = 1332},
-//            new Car(){Color = Color.Blue, Extras = new List<ExtraItem>() { new(){Name = Extra.Awesome}, new(){Name = Extra.Loud}}, Make = Make.Hyundai, Model = Model.Three, RecommendedPrice = 1223},
-//            new Car(){Color = Color.Blue, Extras = new List<ExtraItem>() { new(){Name = Extra.Loud}, new(){Name = Extra.Slow}}, Make = Make.Hyundai, Model = Model.One, RecommendedPrice = 142},
-//            new Car(){Color = Color.Blue, Extras = new List<ExtraItem>() { new(){Name = Extra.Awesome}, new(){Name = Extra.Fast}}, Make = Make.Kia, Model = Model.Two, RecommendedPrice = 152},
-//            new Car(){Color = Color.Blue, Extras = new List<ExtraItem>() { new(){Name = Extra.ReallyFast}}, Make = Make.Kia, Model = Model.One, RecommendedPrice = 127},
-//            new Car(){Color = Color.Blue, Extras = new List<ExtraItem>() { new(){Name = Extra.Fast}, new(){Name = Extra.Awesome}}, Make = Make.Ford, Model = Model.Two, RecommendedPrice = 1252},
-//            new Car(){Color = Color.Blue, Extras = new List<ExtraItem>() { new(){Name = Extra.Fast}, new(){Name = Extra.ReallyFast}}, Make = Make.Nissan, Model = Model.Two, RecommendedPrice = 182},
-//            new Car(){Color = Color.Blue, Extras = new List<ExtraItem>() { new(){Name = Extra.Slow}, new(){Name = Extra.Fast}}, Make = Make.Nissan, Model = Model.Three, RecommendedPrice = 612},
-//            new Car(){Color = Color.Blue, Extras = new List<ExtraItem>() { new(){Name = Extra.Awesome}, new(){Name = Extra.Slow}}, Make = Make.Hyundai, Model = Model.Two, RecommendedPrice = 1782},
-//            new Car(){Color = Color.Blue, Extras = new List<ExtraItem>() { new(){Name = Extra.Awesome}, new(){Name = Extra.Fast}, new (){Name = Extra.ReallyFast}}, Make = Make.Kia, Model = Model.Four, RecommendedPrice = 122},
-//};
+            AddExtras();
+            AddCars(30);
+            AddCustomers();
+            AddSalesPeople();
+            AddCarPurchases();
+        }
 
-//            foreach (var s in cars)
-//            {
-//                context.Cars.Add(s);
-//            }
-//            context.SaveChanges();
+        private void AddCarPurchases()
+        {
+            var startDate = new DateTime(2000, 1, 1);
+            var endDate = DateTime.Now;
+            var rnd = new Random();
+            foreach (var car in Ctx.Cars)
+            {
+                var random = rnd.Next();
+                var random2 = rnd.Next();
+                var purchase = new CarPurchase()
+                {
+                    Car = car,
+                    Customer = Ctx.Customers.OrderBy(x => random).First(),
+                    SalesPerson = Ctx.SalesPeople.OrderBy(x => random2).First(),
+                    OrderDate = startDate.RandomBetween(endDate),
+                    PricePaid = GetPricePaid(car.RecommendedPrice)
+                };
+                Ctx.CarPurchases.Add(purchase);
+            }
 
-//            context.Cars.AddRange(cars);
-//            context.SaveChanges();
+            Ctx.SaveChanges();
+        }
 
+        private float GetPricePaid(float recommended)
+        {
+            var rnd = new Random();
+            return rnd.Next(1, 2) == 1 
+                ? recommended + rnd.Next(4000) 
+                : recommended - rnd.Next(4000);
+        }
 
+        private void AddSalesPeople()
+        {
+            var salesPeople = new SalesPerson[]
+            {
+                new SalesPerson {
+                    Name = "Sally",
+                    Address = new Address("Løkkegade", 1, "9000", "Aalborg", "Denmark"),
+                    Salary = 132
+                },
+                new SalesPerson {
+                    Name = "Sal",
+                    Address = new Address("Løkkegade", 1, "9000", "Aalborg", "Denmark"),
+                    Salary = 300
+                },
+                new SalesPerson {
+                    Name = "Helga",
+                    Address = new Address("Vestergade", 40, "8000", "Aarhus", "Denmark"),
+                    Salary = 132
+                }
+            };
 
-//            var customers = new Customer[]
-//            {
-//            new Customer {FirstName="Carla", LastName="January", Age=20, Address = new Address() {Id = 0, Street = "bingo bango"}, Created = DateTime.Now,},
-//            new Customer {FirstName="Carmen", LastName="Feb", Age=21, Address = new Address() {Street = "klosterport"}, Created = DateTime.Now.AddDays(-2),},
-//            new Customer {FirstName="Carlos", LastName="March", Age=22, Address = new Address() {Street = "bingo bang0"}, Created = DateTime.Now.AddDays(-3),},
-//            new Customer {FirstName="Ricardo", LastName="April", Age=23, Address = new Address() {Street = "graven"}, Created = DateTime.Now.AddDays(-4),},
-//            new Customer {FirstName="Carl", LastName="June", Age=24, Address = new Address() {Street = "bingo"}, Created = DateTime.Now.AddDays(-17),},
-//            new Customer {FirstName="Carsten", LastName="July", Age=23, Address = new Address() {Street = "bango"}, Created = DateTime.Now.AddDays(-7),},
-//            };
+            Ctx.SalesPeople.AddRange(salesPeople);
+            Ctx.SaveChanges();
+        }
 
-//            context.Customers.AddRange(customers);
-//            context.SaveChanges();
+        private void AddCustomers()
+        {
+            var customers = new Customer[]
+            {
+                new Customer("Carla", "Smith", 20, DateTime.Now,
+                    new Address("BingoGade", 20, "8000", "Aarhus", "Denmark")),
+                new Customer("Max", "Mustermann", 19, DateTime.Now,
+                    new Address("Hauptstrasse", 15, "21614", "Buxtehude", "Germany")),
+                new Customer("Jens", "Møller", 20, DateTime.Now,
+                    new Address("Banegade", 20, "8000", "Aarhus", "Denmark")),
+                new Customer("Kathrine", "The Great", 34, DateTime.Now,
+                    new Address("BingoGade", 8, "9100", "Aalborg", "Denmark")),
+                new Customer("Stephan", "Johannson", 22, DateTime.Now,
+                    new Address("Klostergade", 3, "9000", "Aalborg", "Denmark")),
+                new Customer("Anders", "Nielsen", 54, DateTime.Now,
+                    new Address("Klostergade", 10, "8000", "Aarhus", "Denmark")),
+                new Customer("Louisa", "Encanto", 20, DateTime.Now,
+                    new Address("BingoGade", 20, "8000", "Aarhus", "Denmark")),
+                new Customer("Anette", "Kingsley", 30, DateTime.Now,
+                    new Address("Løkkegade", 20, "9000", "Aalborg", "Denmark")),
+                new Customer("Tim", "Lee", 33, DateTime.Now,
+                    new Address("BingoGade", 99, "8000", "Aarhus", "Denmark")),
 
+            };
 
+            Ctx.Customers.AddRange(customers);
+            Ctx.SaveChanges();
+        }
 
-//            var salesPeople = new SalesPerson[]
-//            {
-//            new SalesPerson{Name = "Sally", Address = new Address(){HouseNumber = "12b"}, Salary = 132},
-//            new SalesPerson{Name = "Sal", Address = new Address() {Country = "DK"}, Salary = 12},
-//            new SalesPerson{Name = "Helga", Address = new Address() {ZipCode = "33028"}, Salary = 412}
-//            };
+        private void AddCars(int amount)
+        {
+            var cars = Enumerable.Range(0, amount)
+                .Select(x => new Car()
+                {
+                    Color = RandomColor(),
+                    Extras = GetRandomExtras(),
+                    Make = RandomMake(),
+                    Model = RandomModel(),
+                    RecommendedPrice = RandomPrice()
+                }).ToList();
 
-//            context.SalesPeople.AddRange(salesPeople);
-//            context.SaveChanges();
+            Ctx.Cars.AddRange(cars);
+            Ctx.SaveChanges();
+        }
 
-//            var carPurchases = new CarPurchase[]
-//            {
-//                new CarPurchase{CarId = 1, CustomerId = 3, SalesPersonId = 1},
-//                new CarPurchase{CarId = 2, CustomerId = 4, SalesPersonId = 2},
-//                new CarPurchase{CarId = 3, CustomerId = 3, SalesPersonId = 3},
-//                new CarPurchase{CarId = 4, CustomerId = 6, SalesPersonId = 1},
-//                new CarPurchase{CarId = 5, CustomerId = 2, SalesPersonId = 2},
-//                new CarPurchase{CarId = 6, CustomerId = 1, SalesPersonId = 3},
-//                new CarPurchase{CarId = 7, CustomerId = 4, SalesPersonId = 3},
-//                new CarPurchase{CarId = 8, CustomerId = 6, SalesPersonId = 2},
-//                new CarPurchase{CarId = 9, CustomerId = 5, SalesPersonId = 2},
-//                new CarPurchase{CarId = 10, CustomerId = 2, SalesPersonId = 1},
-//            };
+        private void AddExtras()
+        {
+            var extras = new ExtraItem[]
+            {
+                new ExtraItem() {Name = Extra.Awesome},
+                new ExtraItem() {Name = Extra.Slow},
+                new ExtraItem() {Name = Extra.Loud},
+                new ExtraItem() {Name = Extra.ReallyFast},
+                new ExtraItem() {Name = Extra.Fast},
+            };
 
-//            context.CarPurchases.AddRange(carPurchases);
-//            context.SaveChanges();
-//        }
-//    }
-//}
+            Ctx.Extras.AddRange(extras);
+            Ctx.SaveChanges();
+        }
+    }
+}

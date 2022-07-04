@@ -2,6 +2,19 @@
 {
     public class Customer
     {
+        public Customer()
+        {
+        }
+
+        public Customer(string firstName, string lastName, int age, DateTime created, Address address)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+            Age = age;
+            Created = created;
+            Address = address;
+        }
+
         public int Id { get; set; }
 
         public string FirstName { get; set; }

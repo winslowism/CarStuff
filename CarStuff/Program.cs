@@ -35,7 +35,7 @@ using (var scope = app.Services.CreateScope())
 
     var context = services.GetRequiredService<CarContext>();
     context.Database.EnsureCreated();
-    //DbInitializer.Initialize(context);
+    new DbInitializer(context).Initialize();
 }
 
 app.UseHttpsRedirection();
