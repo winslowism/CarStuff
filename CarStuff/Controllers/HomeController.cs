@@ -18,7 +18,7 @@ namespace CarStuff.Controllers
         {
             var purchases = _carPurchaseRepo.GetAll().ToList();
 
-            return View();
+            return View(purchases);
         }
 
         public IActionResult Privacy()

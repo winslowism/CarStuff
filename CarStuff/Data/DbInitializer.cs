@@ -53,13 +53,11 @@ namespace CarStuff.Data
             var rnd = new Random();
             foreach (var car in _ctx.Cars)
             {
-                var random = rnd.Next();
-                var random2 = rnd.Next();
                 var purchase = new CarPurchase()
                 {
                     Car = car,
-                    Customer = _ctx.Customers.OrderBy(x => random).First(),
-                    SalesPerson = _ctx.SalesPeople.OrderBy(x => random2).First(),
+                    Customer = _ctx.Customers.ToList().OrderBy(x => rnd.Next()).First(),
+                    SalesPerson = _ctx.SalesPeople.ToList().OrderBy(x => rnd.Next()).First(),
                     OrderDate = startDate.RandomBetween(endDate),
                     PricePaid = GetPricePaid(car.RecommendedPrice)
                 };
