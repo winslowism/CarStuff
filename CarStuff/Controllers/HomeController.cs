@@ -1,4 +1,5 @@
-﻿using CarStuff.Models;
+﻿using CarStuff.DAL.Repositories;
+using CarStuff.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -6,15 +7,17 @@ namespace CarStuff.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ICarPurchaseRepo _carPurchaseRepo;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ICarPurchaseRepo carPurchaseRepo)
         {
-            _logger = logger;
+            this._carPurchaseRepo = carPurchaseRepo;
         }
 
         public IActionResult Index()
         {
+            var purchases = _carPurchaseRepo.GetAll().ToList();
+
             return View();
         }
 

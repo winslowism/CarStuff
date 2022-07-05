@@ -7,7 +7,7 @@ public class Address
 
     }
 
-    public Address(string street, int houseNumber, string zipCode, string town, string country)
+    public Address(string street, string houseNumber, string zipCode, string town, string country)
     {
         HouseNumber = houseNumber;
         Street = street;
@@ -17,7 +17,7 @@ public class Address
     }
 
     public int Id { get; set; }
-    public int HouseNumber { get; set; }
+    public string HouseNumber { get; set; }
     public string Street { get; set; }
     public string Town { get; set; }
     public string ZipCode { get; set; }

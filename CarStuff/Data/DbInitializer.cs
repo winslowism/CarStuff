@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CarStuff.DAL;
 using CarStuff.Extensions;
 using CarStuff.Models;
 using Microsoft.EntityFrameworkCore;
@@ -7,20 +8,20 @@ namespace CarStuff.Data
 {
     public class DbInitializer
     {
-        private CarContext Ctx { get; }
+        private CarContext _ctx { get; }
 
         public DbInitializer(CarContext ctx)
         {
-            this.Ctx = ctx;
+            this._ctx = ctx;
         }
 
         public List<ExtraItem> GetRandomExtras()
         {
             var rnd = new Random();
-            var extras = Ctx.Extras
+            var extras = _ctx.Extras
                 .ToList()
                 .OrderBy(x => rnd.Next())
-                .Take(rnd.Next(Ctx.Extras.Count()))
+                .Take(rnd.Next(_ctx.Extras.Count()))
                 .ToList();
             return extras;
         }
@@ -33,7 +34,7 @@ namespace CarStuff.Data
         public void Initialize()
         {
             // check customers
-            if (Ctx.Customers.Any())
+            if (_ctx.Customers.Any())
             {
                 return;
             }
@@ -50,22 +51,22 @@ namespace CarStuff.Data
             var startDate = new DateTime(2000, 1, 1);
             var endDate = DateTime.Now;
             var rnd = new Random();
-            foreach (var car in Ctx.Cars)
+            foreach (var car in _ctx.Cars)
             {
                 var random = rnd.Next();
                 var random2 = rnd.Next();
                 var purchase = new CarPurchase()
                 {
                     Car = car,
-                    Customer = Ctx.Customers.OrderBy(x => random).First(),
-                    SalesPerson = Ctx.SalesPeople.OrderBy(x => random2).First(),
+                    Customer = _ctx.Customers.OrderBy(x => random).First(),
+                    SalesPerson = _ctx.SalesPeople.OrderBy(x => random2).First(),
                     OrderDate = startDate.RandomBetween(endDate),
                     PricePaid = GetPricePaid(car.RecommendedPrice)
                 };
-                Ctx.CarPurchases.Add(purchase);
+                _ctx.CarPurchases.Add(purchase);
             }
 
-            Ctx.SaveChanges();
+            _ctx.SaveChanges();
         }
 
         private float GetPricePaid(float recommended)
@@ -82,23 +83,23 @@ namespace CarStuff.Data
             {
                 new SalesPerson {
                     Name = "Sally",
-                    Address = new Address("Løkkegade", 1, "9000", "Aalborg", "Denmark"),
+                    Address = new Address("Løkkegade", "1", "9000", "Aalborg", "Denmark"),
                     Salary = 132
                 },
                 new SalesPerson {
                     Name = "Sal",
-                    Address = new Address("Løkkegade", 1, "9000", "Aalborg", "Denmark"),
+                    Address = new Address("Løkkegade", "1", "9000", "Aalborg", "Denmark"),
                     Salary = 300
                 },
                 new SalesPerson {
                     Name = "Helga",
-                    Address = new Address("Vestergade", 40, "8000", "Aarhus", "Denmark"),
+                    Address = new Address("Vestergade", "40", "8000", "Aarhus", "Denmark"),
                     Salary = 132
                 }
             };
 
-            Ctx.SalesPeople.AddRange(salesPeople);
-            Ctx.SaveChanges();
+            _ctx.SalesPeople.AddRange(salesPeople);
+            _ctx.SaveChanges();
         }
 
         private void AddCustomers()
@@ -106,28 +107,28 @@ namespace CarStuff.Data
             var customers = new Customer[]
             {
                 new Customer("Carla", "Smith", 20, DateTime.Now,
-                    new Address("BingoGade", 20, "8000", "Aarhus", "Denmark")),
+                    new Address("BingoGade", "20", "8000", "Aarhus", "Denmark")),
                 new Customer("Max", "Mustermann", 19, DateTime.Now,
-                    new Address("Hauptstrasse", 15, "21614", "Buxtehude", "Germany")),
+                    new Address("Hauptstrasse", "15", "21614", "Buxtehude", "Germany")),
                 new Customer("Jens", "Møller", 20, DateTime.Now,
-                    new Address("Banegade", 20, "8000", "Aarhus", "Denmark")),
+                    new Address("Banegade", "20", "8000", "Aarhus", "Denmark")),
                 new Customer("Kathrine", "The Great", 34, DateTime.Now,
-                    new Address("BingoGade", 8, "9100", "Aalborg", "Denmark")),
+                    new Address("BingoGade", "8", "9100", "Aalborg", "Denmark")),
                 new Customer("Stephan", "Johannson", 22, DateTime.Now,
-                    new Address("Klostergade", 3, "9000", "Aalborg", "Denmark")),
+                    new Address("Klostergade", "3", "9000", "Aalborg", "Denmark")),
                 new Customer("Anders", "Nielsen", 54, DateTime.Now,
-                    new Address("Klostergade", 10, "8000", "Aarhus", "Denmark")),
+                    new Address("Klostergade", "10", "8000", "Aarhus", "Denmark")),
                 new Customer("Louisa", "Encanto", 20, DateTime.Now,
-                    new Address("BingoGade", 20, "8000", "Aarhus", "Denmark")),
+                    new Address("BingoGade", "20", "8000", "Aarhus", "Denmark")),
                 new Customer("Anette", "Kingsley", 30, DateTime.Now,
-                    new Address("Løkkegade", 20, "9000", "Aalborg", "Denmark")),
+                    new Address("Løkkegade", "20", "9000", "Aalborg", "Denmark")),
                 new Customer("Tim", "Lee", 33, DateTime.Now,
-                    new Address("BingoGade", 99, "8000", "Aarhus", "Denmark")),
+                    new Address("BingoGade", "99", "8000", "Aarhus", "Denmark")),
 
             };
 
-            Ctx.Customers.AddRange(customers);
-            Ctx.SaveChanges();
+            _ctx.Customers.AddRange(customers);
+            _ctx.SaveChanges();
         }
 
         private void AddCars(int amount)
@@ -142,8 +143,8 @@ namespace CarStuff.Data
                     RecommendedPrice = RandomPrice()
                 }).ToList();
 
-            Ctx.Cars.AddRange(cars);
-            Ctx.SaveChanges();
+            _ctx.Cars.AddRange(cars);
+            _ctx.SaveChanges();
         }
 
         private void AddExtras()
@@ -157,8 +158,8 @@ namespace CarStuff.Data
                 new ExtraItem() {Name = Extra.Fast},
             };
 
-            Ctx.Extras.AddRange(extras);
-            Ctx.SaveChanges();
+            _ctx.Extras.AddRange(extras);
+            _ctx.SaveChanges();
         }
     }
 }

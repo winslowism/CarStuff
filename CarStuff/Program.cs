@@ -1,3 +1,5 @@
+using CarStuff.DAL;
+using CarStuff.DAL.Repositories;
 using CarStuff.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +14,13 @@ builder.Services.AddDbContext<CarContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+// register repos
+builder.Services.AddScoped<IAddressRepo,AddressRepo>();
+builder.Services.AddScoped<ICarPurchaseRepo,CarPurchaseRepo>();
+builder.Services.AddScoped<ICarRepo,CarRepo>();
+builder.Services.AddScoped<ICustomerRepo,CustomerRepo>();
+builder.Services.AddScoped<IExtraItemRepo,ExtraItemRepo>();
+builder.Services.AddScoped<ISalesPersonRepo,SalesPersonRepo>();
 
 var app = builder.Build();
 

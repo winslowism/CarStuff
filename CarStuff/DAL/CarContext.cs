@@ -1,7 +1,7 @@
 ﻿using CarStuff.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace CarStuff.Data
+namespace CarStuff.DAL
 {
 
     public class CarContext : DbContext
