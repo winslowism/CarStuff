@@ -2,6 +2,7 @@
 using CarStuff.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 
 namespace CarStuff.Controllers
 {
@@ -19,6 +20,27 @@ namespace CarStuff.Controllers
             var purchases = _carPurchaseRepo.GetAll().ToList();
 
             return View(purchases);
+        }
+
+        [HttpPost]
+        public IActionResult Index(FormModel model)
+        {
+            var purchases = _carPurchaseRepo.GetAll();
+
+            if (!string.IsNullOrWhiteSpace(model.CustomerName))
+                purchases = purchases.Where(x => x.Customer.FirstName.ToLower().Contains(model.CustomerName.Trim().ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(model.CustomerStreet))
+                purchases = purchases.Where(x => x.Customer.Address.Street.ToLower().Contains(model.CustomerStreet.Trim().ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(model.SalesPersonName))
+                purchases = purchases.Where(x => x.SalesPerson.Name.ToLower().Contains(model.SalesPersonName.Trim().ToLower()));
+
+            ViewBag.CustomerName = model.CustomerName;
+            ViewBag.CustomerStreet = model.CustomerStreet;
+            ViewBag.SalesPersonName = model.SalesPersonName;
+
+            return View(purchases.ToList());
         }
 
         public IActionResult Privacy()

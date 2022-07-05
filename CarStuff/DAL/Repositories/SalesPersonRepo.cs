@@ -21,7 +21,7 @@ namespace CarStuff.DAL.Repositories
             return _ctx.SalesPeople.FirstOrDefault(x => x.Id == id) ?? null; 
         }
 
-        public IEnumerable<SalesPerson> GetAll()
+        public IQueryable<SalesPerson> GetAll()
         {
             return _ctx.SalesPeople;
         }

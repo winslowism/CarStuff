@@ -21,7 +21,7 @@ namespace CarStuff.DAL.Repositories
             return _ctx.Addresses.FirstOrDefault(x => x.Id == id) ?? null;
         }
 
-        public IEnumerable<Address> GetAll()
+        public IQueryable<Address> GetAll()
         {
             return _ctx.Addresses;
         }

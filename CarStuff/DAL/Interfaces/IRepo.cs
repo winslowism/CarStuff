@@ -4,6 +4,6 @@
     public interface IRepo<T>
     {
         public T Get(int id);
-        public IEnumerable<T> GetAll();
+        public IQueryable<T> GetAll();
     }
 }

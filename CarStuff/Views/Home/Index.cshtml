@@ -7,20 +7,41 @@
 <div class="text-center">
     <h1 class="display-4">CarStuff</h1>
     <h4>Carpurchases</h4>
-    
-    <table class="table table-bordered table-responsive table-hover">  
-        <tr>  
-            <th>Customer Name</th>  
-            <th>Customer Street</th>  
-            <th>Car Make</th>  
-            <th>Car Model</th>  
-            <th>Paid Price</th>  
-            <th>Recommended Price</th>  
+
+
+
+
+    <table class="table table-bordered table-responsive table-hover">
+        <tr>
+            <th>Customer Name</th>
+            <th>Customer Street</th>
+            <th>Car Make</th>
+            <th>Car Model</th>
+            <th>Paid Price</th>
+            <th>Recommended Price</th>
             <th>Salesperson</th>
-        </tr>  
-        @foreach (var purchase in Model)  
-        {  
-            <tr>  
+            <th></th>
+        </tr>
+
+        @using (Html.BeginForm("Index", "Home", FormMethod.Post))
+        {
+            <form method="post" class="form-inline">
+            <tr>
+                <th><input type="text" name="CustomerName" value="@ViewBag.CustomerName" /></th>
+                <th><input type="text" name="CustomerStreet" value="@ViewBag.CustomerStreet" /></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th><input type="text" name="SalesPersonName" value="@ViewBag.SalesPersonName" /></th>
+                <th><button type="submit">Submit</button></th>
+            </tr>
+            </form>
+        }
+
+        @foreach (var purchase in Model)
+        {
+            <tr>
                 <td>@purchase.Customer.FirstName</td>
                 <td>@purchase.Customer.Address.Street</td>
                 <td>@purchase.Car.Make</td>
@@ -28,8 +49,8 @@
                 <td>@purchase.PricePaid</td>
                 <td>@purchase.Car.RecommendedPrice</td>
                 <td>@purchase.SalesPerson.Name</td>
-            </tr>  
-        }  
+            </tr>
+        }
     </table>
 
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>

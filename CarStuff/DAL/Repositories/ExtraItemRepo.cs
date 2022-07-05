@@ -21,7 +21,7 @@ namespace CarStuff.DAL.Repositories
             return _ctx.Extras.FirstOrDefault(x => x.Id == id) ?? null;
         }
 
-        public IEnumerable<ExtraItem> GetAll()
+        public IQueryable<ExtraItem> GetAll()
         {
             return _ctx.Extras;
         }

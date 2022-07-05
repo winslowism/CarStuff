@@ -22,7 +22,7 @@ namespace CarStuff.DAL.Repositories
             return _ctx.CarPurchases.FirstOrDefault(x => x.Id == id);
         }
 
-        public IEnumerable<CarPurchase> GetAll()
+        public IQueryable<CarPurchase> GetAll()
         {
             return _ctx.CarPurchases
                 .Include(x => x.Car)
